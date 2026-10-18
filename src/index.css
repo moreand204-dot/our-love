@@ -1,0 +1,12 @@
+@tailwind base;@tailwind components;@tailwind utilities;
+:root{--glass-rgb:244,114,182;--glass-a:.08;--radius:1.25rem;--primary:#f472b6;--secondary:#e8b4a0;--accent:#a78bfa;--bg1:#0b1026;--bg2:#1a1038;--glass:rgba(244,114,182,.08);--text:#fdf2f8}
+body{margin:0;font-family:Tajawal,system-ui,sans-serif;color:var(--text);min-height:100vh;
+ background:radial-gradient(ellipse at top,var(--bg2),var(--bg1) 70%) fixed}
+.glass{background:rgba(var(--glass-rgb),var(--glass-a));border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:var(--radius);box-shadow:0 8px 32px rgba(0,0,0,.25)}
+.btn{background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;border-radius:.9rem;padding:.7rem 1.2rem;font-weight:700;transition:opacity .2s}
+.btn:disabled{opacity:.5}
+.input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:.8rem;padding:.7rem 1rem;color:var(--text);outline:none}
+.input:focus{border-color:var(--primary)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+@keyframes pop{0%{transform:scale(.8) rotate(-3deg);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
