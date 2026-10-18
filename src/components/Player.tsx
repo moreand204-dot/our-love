@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { SkipBack, SkipForward, Play, Pause, ListMusic, X, Music } from 'lucide-react'
 export type Song = { id: string; title: string; artist: string; description: string; audio_path: string | null; audio_url: string | null; cover_path: string | null; is_default: boolean }
 async function srcOf(s: Song) { if (s.audio_url) return s.audio_url; const { data } = await supabase.storage.from('songs').createSignedUrl(s.audio_path!, 3600); return data?.signedUrl }
 const fmt = (n: number) => `${Math.floor(n / 60)}:${String(Math.floor(n % 60)).padStart(2, '0')}`
@@ -31,13 +32,13 @@ export default function Player() {
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0" style={{ background: 'linear-gradient(135deg,var(--primary),var(--accent))' }}>{cover && <img src={cover} alt="" className="w-full h-full object-cover" />}</div>
           <div className="min-w-0 flex-1"><p className="text-sm font-bold truncate">{cur?.title}</p><p className="text-[11px] opacity-70 truncate">{err || cur?.artist}</p></div>
-          <button onClick={() => step(-1)} aria-label="السابقة">⏮</button>
-          <button onClick={() => playing ? a.current?.pause() : play(i)} aria-label="تشغيل/إيقاف" className="text-xl px-1">{playing ? '⏸' : '▶️'}</button>
-          <button onClick={() => step(1)} aria-label="التالية">⏭</button>
+          <button onClick={() => step(-1)} aria-label="السابقة"><SkipBack className="w-5 h-5" fill="currentColor" strokeWidth={1.5} /></button>
+          <button onClick={() => playing ? a.current?.pause() : play(i)} aria-label="تشغيل/إيقاف" className="text-xl px-1">{playing ? <Pause className="w-6 h-6" fill="currentColor" strokeWidth={1.5} /> : <Play className="w-6 h-6" fill="currentColor" strokeWidth={1.5} />}</button>
+          <button onClick={() => step(1)} aria-label="التالية"><SkipForward className="w-5 h-5" fill="currentColor" strokeWidth={1.5} /></button>
           <input type="range" min="0" max="1" step=".05" value={vol} onChange={e => setVol(+e.target.value)} className="w-16 hidden sm:block" aria-label="الصوت" />
-          <button onClick={() => setList(!list)} aria-label="القائمة">☰</button><button onClick={() => toggleOn(false)} aria-label="إخفاء" className="opacity-60">✕</button></div>
+          <button onClick={() => setList(!list)} aria-label="القائمة"><ListMusic className="w-5 h-5" strokeWidth={1.75} /></button><button onClick={() => toggleOn(false)} aria-label="إخفاء" className="opacity-60"><X className="w-5 h-5" strokeWidth={1.75} /></button></div>
         <div className="flex items-center gap-2 text-[10px] opacity-70"><span>{fmt(t)}</span>
           <input type="range" min="0" max={dur || 0} value={t} onChange={e => { if (a.current) a.current.currentTime = +e.target.value }} className="flex-1" aria-label="التقدم" /><span>{fmt(dur || 0)}</span></div>
-      </div>) : <button onClick={() => toggleOn(true)} className="fixed z-40 glass px-3 py-2 right-3 bottom-[calc(4.2rem+env(safe-area-inset-bottom))] md:bottom-4" aria-label="تفعيل الموسيقى">🎵</button>)}
+      </div>) : <button onClick={() => toggleOn(true)} className="fixed z-40 glass px-3 py-2 right-3 bottom-[calc(4.2rem+env(safe-area-inset-bottom))] md:bottom-4" aria-label="تفعيل الموسيقى"><Music className="w-5 h-5" strokeWidth={1.75} /></button>)}
   </>)
 }
