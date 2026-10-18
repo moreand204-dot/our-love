@@ -20,7 +20,7 @@ export default function Sections() {
     const newSlug = () => 's-' + crypto.randomUUID().replace(/-/g, '').slice(0, 10)
     let { error } = await supabase.from('sections').insert({ ...row, slug: newSlug() })
     if (error?.code === '23505') ({ error } = await supabase.from('sections').insert({ ...row, slug: newSlug() }))
-    if (error) return setMsg('تعذّر إنشاء القسم، حاول مرة أخرى.')
+    if (error) return setMsg(`تعذّر إنشاء القسم: ${error.message}${error.code ? ' (' + error.code + ')' : ''}`)
     setMsg(''); setOpen(false); load()
   }
   async function toggle(s: Section) { await supabase.from('sections').update({ is_visible: !s.is_visible }).eq('id', s.id); load() }
