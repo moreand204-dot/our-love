@@ -2,6 +2,8 @@ import { FormEvent, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import { dim, occurs } from '../lib/calendar'
+import { CalendarDays, Repeat, ArrowRight, ArrowLeft, Circle } from 'lucide-react'
+import Love from '../components/Love'
 type Ev = { id: string; title: string; description: string; event_date: string; color: string; repeat: 'none' | 'yearly' | 'monthly'; created_by: string }
 const DAYS = ['س', 'ح', 'ن', 'ث', 'ر', 'خ', 'ج'], MONTHS = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
 export default function Calendar() {
@@ -27,11 +29,11 @@ export default function Calendar() {
   const list = sel ? on(sel) : evs.filter(e => { for (let d = 1; d <= n; d++) if (occurs(e, y, m, d)) return true; return false })
   return (
     <main className="max-w-2xl mx-auto p-5 pb-40 space-y-4">
-      <h1 className="text-xl font-bold">تقويم المناسبات 📅</h1>
+      <h1 className="text-xl font-bold"><CalendarDays className="inline-block w-[1.1em] h-[1.1em] align-[-0.18em] ml-1.5" strokeWidth={1.75} aria-hidden />تقويم المناسبات</h1>
       {upcoming.length > 0 && <section className="glass p-4 space-y-1"><h2 className="text-sm opacity-70">الجاية قريب</h2>
-        {upcoming.map(u => <p key={u.ev.id} className="flex justify-between"><span style={{ color: u.ev.color }}>● {u.ev.title}</span><span className="text-sm opacity-70">{u.days === 0 ? 'النهارده ♥' : `بعد ${u.days} يوم`}</span></p>)}</section>}
+        {upcoming.map(u => <p key={u.ev.id} className="flex justify-between"><span style={{ color: u.ev.color }}><Circle className="inline-block w-2.5 h-2.5 ml-1.5" fill="currentColor" aria-hidden />{u.ev.title}</span><span className="text-sm opacity-70">{u.days === 0 ? <>النهارده <Love /></> : `بعد ${u.days} يوم`}</span></p>)}</section>}
       <section className="glass p-4">
-        <div className="flex items-center justify-between mb-3"><button onClick={() => shift(1)} aria-label="الشهر التالي">→</button><b>{MONTHS[m - 1]} {y}</b><button onClick={() => shift(-1)} aria-label="الشهر السابق">←</button></div>
+        <div className="flex items-center justify-between mb-3"><button onClick={() => shift(1)} aria-label="الشهر التالي"><ArrowRight className="w-5 h-5" /></button><b>{MONTHS[m - 1]} {y}</b><button onClick={() => shift(-1)} aria-label="الشهر السابق"><ArrowLeft className="w-5 h-5" /></button></div>
         <div className="grid grid-cols-7 gap-1 text-center text-sm">{DAYS.map(d => <span key={d} className="opacity-60 text-xs">{d}</span>)}
           {Array.from({ length: lead }).map((_, i) => <span key={'e' + i} />)}
           {Array.from({ length: n }, (_, i) => i + 1).map(d => { const e = on(d), today = d === now.getDate() && m === now.getMonth() + 1 && y === now.getFullYear()
@@ -41,7 +43,7 @@ export default function Calendar() {
       <section className="space-y-2"><h2 className="text-sm opacity-70">{sel ? `يوم ${sel} ${MONTHS[m - 1]}` : `مناسبات ${MONTHS[m - 1]}`}</h2>
         {loading ? <p className="opacity-70 text-center">...</p> : list.length === 0 ? <p className="glass p-5 text-center opacity-80 text-sm">مفيش مناسبات.</p> :
           list.map(e => <div key={e.id} className="glass p-3 flex justify-between gap-3" style={{ borderRight: `4px solid ${e.color}` }}>
-            <div><p className="font-bold">{e.title}{e.repeat !== 'none' && ' 🔁'}</p><p className="text-xs opacity-70">{e.description}</p><p className="text-[11px] opacity-50">{who(e.created_by)} · {e.event_date}</p></div>
+            <div><p className="font-bold">{e.title}{e.repeat !== 'none' && <Repeat className="inline-block w-3.5 h-3.5 mr-1.5" aria-label="متكرر" />}</p><p className="text-xs opacity-70">{e.description}</p><p className="text-[11px] opacity-50">{who(e.created_by)} · {e.event_date}</p></div>
             {e.created_by === me?.id && <button onClick={() => del(e)} className="text-xs text-rose-300 underline">حذف</button>}</div>)}</section>
       <form onSubmit={add} className="glass p-4 space-y-3"><h2 className="font-bold">+ مناسبة جديدة</h2>
         <input name="title" className="input" placeholder="العنوان" required maxLength={100} /><input name="description" className="input" placeholder="وصف (اختياري)" maxLength={300} />

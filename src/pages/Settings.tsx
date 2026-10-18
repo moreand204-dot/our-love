@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../auth/AuthProvider'
+import { Music, Palette } from 'lucide-react'
 export default function Settings() {
   const { me, partner, refresh } = useAuth(), [msg, setMsg] = useState<{ ok: boolean; t: string } | null>(null)
   const [rs, setRs] = useState<{ started_on: string | null; home_quote: string; little_world_text: string } | null>(null)
@@ -25,7 +26,7 @@ export default function Settings() {
   return (
     <main className="max-w-2xl mx-auto p-5 pb-28 space-y-5">
       <h1 className="text-xl font-bold">الإعدادات</h1>
-      <div className="flex gap-3"><Link to="/songs" className="glass flex-1 p-4 text-center">🎵 الأغاني</Link><Link to="/theme" className="glass flex-1 p-4 text-center">🎨 التصميم</Link></div>
+      <div className="flex gap-3"><Link to="/songs" className="glass flex-1 p-4 text-center flex items-center justify-center gap-2"><Music className="w-5 h-5" strokeWidth={1.75} aria-hidden />الأغاني</Link><Link to="/theme" className="glass flex-1 p-4 text-center flex items-center justify-center gap-2"><Palette className="w-5 h-5" strokeWidth={1.75} aria-hidden />التصميم</Link></div>
       {msg && <p role="status" className={`text-sm ${msg.ok ? 'text-emerald-300' : 'text-rose-300'}`}>{msg.t}</p>}
       <form onSubmit={saveProfile} className="glass p-5 space-y-3"><h2 className="font-bold">ملفي</h2>
         <input name="display_name" className="input" defaultValue={me?.display_name} maxLength={40} placeholder="اسم العرض" />

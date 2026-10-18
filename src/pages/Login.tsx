@@ -1,5 +1,6 @@
 import { FormEvent, useState } from 'react'
 import { supabase, configured } from '../lib/supabase'
+import Love from '../components/Love'
 export default function Login() {
   const [email, setEmail] = useState(''), [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false), [msg, setMsg] = useState<{ok:boolean;t:string}|null>(null)
@@ -17,7 +18,7 @@ export default function Login() {
   return (
     <main className="min-h-screen grid place-items-center p-5">
       <form onSubmit={submit} className="glass w-full max-w-sm p-7 space-y-4">
-        <h1 className="text-2xl font-bold text-center">OUR LOVE ♥</h1>
+        <h1 className="text-2xl font-bold text-center">OUR LOVE <Love /></h1>
         <p className="text-center text-sm opacity-70">بابا &amp; لوكه — عالم صغير لينا إحنا الاتنين</p>
         {!configured && <p className="text-xs text-amber-300">متغيرات Supabase غير مضبوطة (.env).</p>}
         <input className="input" type="email" dir="ltr" placeholder="البريد الإلكتروني" autoComplete="email" required value={email} onChange={e=>setEmail(e.target.value)} />

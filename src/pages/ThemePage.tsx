@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import { PRESETS, Tokens, applyTheme, cached, loadTheme } from '../lib/theme'
+import { Palette } from 'lucide-react'
+import Love from '../components/Love'
 export default function ThemePage() {
   const { me } = useAuth(), [t, setT] = useState<Tokens>(cached() ?? PRESETS['Pink Galaxy']), [msg, setMsg] = useState<{ ok: boolean; s: string } | null>(null), [name, setName] = useState('ثيمي')
   const saved = useRef<Tokens | null>(cached())
@@ -16,7 +18,7 @@ export default function ThemePage() {
   const colors: [keyof Tokens, string][] = [['primary', 'الأساسي'], ['secondary', 'الثانوي'], ['accent', 'المميز'], ['bg1', 'الخلفية 1'], ['bg2', 'الخلفية 2']]
   return (
     <main className="max-w-2xl mx-auto p-5 pb-28 space-y-4">
-      <h1 className="text-xl font-bold">التصميم 🎨</h1>
+      <h1 className="text-xl font-bold">التصميم <Palette className="inline-block w-[1.1em] h-[1.1em] align-[-0.18em] ml-1.5" strokeWidth={1.75} aria-hidden /></h1>
       <p className="text-xs opacity-70">أي تغيير هنا معاينة فقط لحد ما تضغط "حفظ وتفعيل".</p>
       <div className="flex flex-wrap gap-2">{Object.entries(PRESETS).map(([n, p]) => <button key={n} onClick={() => { setName(n); change(p) }} className="glass px-3 py-2 text-sm" style={{ borderColor: p.primary }}>{n}</button>)}</div>
       <section className="glass p-4 space-y-3">
@@ -28,6 +30,6 @@ export default function ThemePage() {
           <button className="glass px-4" onClick={() => { if (saved.current) { setT(saved.current); applyTheme(saved.current) } }}>تراجع</button></div>
         {msg && <p role="status" className={`text-sm ${msg.ok ? 'text-emerald-300' : 'text-rose-300'}`}>{msg.s}</p>}
       </section>
-      <div className="glass p-5 text-center"><p className="font-bold" style={{ color: 'var(--secondary)' }}>معاينة بطاقة</p><p className="text-sm opacity-80">للوكه حبيبة قلب بابا ♥</p></div>
+      <div className="glass p-5 text-center"><p className="font-bold" style={{ color: 'var(--secondary)' }}>معاينة بطاقة</p><p className="text-sm opacity-80">للوكه حبيبة قلب بابا <Love /></p></div>
     </main>)
 }

@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import type { Section } from './Sections'
+import { ArrowRight, Lock, Pin } from 'lucide-react'
 type Post = { id: string; author_id: string; title: string; body: string; visibility: 'private'|'shared'; is_pinned: boolean; created_at: string; updated_at: string }
 export default function SectionView() {
   const { slug } = useParams(), { me, partner } = useAuth()
@@ -31,7 +32,7 @@ export default function SectionView() {
   const name = (id: string) => id === me?.id ? me.display_name : partner?.display_name ?? '—'
   return (
     <main className="max-w-2xl mx-auto p-5 pb-28 space-y-4">
-      <Link to="/sections" className="text-sm opacity-70">← الأقسام</Link>
+      <Link to="/sections" className="text-sm opacity-70 inline-flex items-center gap-1"><ArrowRight className="w-4 h-4" aria-hidden />الأقسام</Link>
       <header style={{ borderRight: `4px solid ${sec.accent_color}` }} className="pr-3"><h1 className="text-xl font-bold">{sec.title}</h1><p className="text-sm opacity-70">{sec.description}</p></header>
       {canWrite ? <form onSubmit={add} className="glass p-4 space-y-3">
         <input name="title" className="input" placeholder="العنوان" maxLength={120} />
@@ -43,7 +44,7 @@ export default function SectionView() {
       {posts.length === 0 ? <p className="glass p-8 text-center opacity-80">لسه مفيش منشورات هنا.</p> : posts.map(p => (
         <article key={p.id} className="glass p-4 space-y-2">
           <div className="flex items-center justify-between text-xs opacity-70"><span>{name(p.author_id)} · {new Date(p.created_at).toLocaleString('ar-EG')}{p.updated_at !== p.created_at && ' · معدّل'}</span>
-            <span>{p.visibility === 'private' ? '🔒 خاص' : 'مشترك'}{p.is_pinned && ' · 📌'}</span></div>
+            <span>{p.visibility === 'private' ? <><Lock className="inline-block w-3 h-3 ml-1" aria-hidden />خاص</> : 'مشترك'}{p.is_pinned && <Pin className="inline-block w-3 h-3 mr-2" aria-label="مثبّت" />}</span></div>
           {p.title && <h2 className="font-bold">{p.title}</h2>}
           <p className="whitespace-pre-wrap leading-8">{p.body}</p>
           {p.author_id === me?.id && <div className="flex gap-3 text-xs opacity-80"><button onClick={() => pin(p)} className="underline">{p.is_pinned ? 'إلغاء التثبيت' : 'تثبيت'}</button><button onClick={() => del(p)} className="underline text-rose-300">حذف</button></div>}

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../auth/AuthProvider'
 type N = { id: string; actor_id: string | null; type: string; read_at: string | null; created_at: string }
-const TEXT: Record<string, string> = { new_message: 'بعتلك رسالة', new_voice: 'بعتلك رسالة صوتية', new_image: 'بعتلك صورة', new_post: 'أضاف منشورًا جديدًا', new_section: 'أنشأ قسمًا جديدًا', new_photo: 'أضاف صورة جديدة', new_surprise: 'بعتلك رسالة مفاجئة ♥' }
+const TEXT: Record<string, string> = { new_message: 'بعتلك رسالة', new_voice: 'بعتلك رسالة صوتية', new_image: 'بعتلك صورة', new_post: 'أضاف منشورًا جديدًا', new_section: 'أنشأ قسمًا جديدًا', new_photo: 'أضاف صورة جديدة', new_surprise: 'بعتلك رسالة مفاجئة' }
 const LINK: Record<string, string> = { new_message: '/chat', new_voice: '/chat', new_image: '/chat', new_post: '/sections', new_section: '/sections', new_photo: '/album', new_surprise: '/surprises' }
 export default function Notifications() {
   const { me, partner } = useAuth(), nav = useNavigate()

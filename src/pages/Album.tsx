@@ -1,6 +1,7 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../auth/AuthProvider'
+import Love from '../components/Love'
 type Album = { id: string; title: string; description: string }
 type Photo = { id: string; album_id: string | null; uploader_id: string; path: string; title: string; description: string; taken_on: string | null; created_at: string }
 export default function AlbumPage() {
@@ -39,7 +40,7 @@ export default function AlbumPage() {
   const who = (id: string) => id === me?.id ? me.display_name : partner?.display_name ?? '—'
   return (
     <main className="max-w-3xl mx-auto p-5 pb-28 space-y-4">
-      <h1 className="text-xl font-bold">صور هتفضل في القلب ♥</h1>
+      <h1 className="text-xl font-bold">صور هتفضل في القلب <Love /></h1>
       <form onSubmit={upload} className="glass p-4 space-y-3">
         <input name="file" type="file" accept="image/jpeg,image/png,image/webp" required className="text-sm" />
         <input name="title" className="input" placeholder="عنوان" maxLength={80} />

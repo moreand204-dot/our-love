@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../auth/AuthProvider'
 import type { Song } from '../components/Player'
+import { Music, Play, Star } from 'lucide-react'
 const EXT: Record<string, string> = { 'audio/mpeg': 'mp3', 'audio/mp4': 'm4a', 'audio/ogg': 'ogg', 'audio/webm': 'webm', 'audio/wav': 'wav' }
 export default function Songs() {
   const { me } = useAuth(), [list, setList] = useState<Song[]>([]), [busy, setBusy] = useState(false), [msg, setMsg] = useState(''), [loading, setLoading] = useState(true)
@@ -26,7 +27,7 @@ export default function Songs() {
   async function makeDefault(s: Song) { const { error } = await supabase.rpc('set_default_song', { p: s.id }); error ? setMsg('تعذّر التعيين.') : load() }
   return (
     <main className="max-w-2xl mx-auto p-5 pb-40 space-y-4">
-      <h1 className="text-xl font-bold">أغانينا 🎵</h1>
+      <h1 className="text-xl font-bold">أغانينا <Music className="inline-block w-[1.1em] h-[1.1em] align-[-0.18em] mr-1.5" strokeWidth={1.75} aria-hidden /></h1>
       <p className="text-xs opacity-70">الموسيقى ما بتشتغل لوحدها — بتبدأ لما تضغط تشغيل. استخدم بس ملفات أو روابط عندك حق استخدامها.</p>
       {me?.can_manage_songs && <form onSubmit={add} className="glass p-4 space-y-3">
         <input name="title" className="input" placeholder="اسم الأغنية" required maxLength={120} /><input name="artist" className="input" placeholder="الفنان" maxLength={80} />
@@ -37,8 +38,8 @@ export default function Songs() {
         <button className="btn w-full" disabled={busy}>{busy ? '...' : 'إضافة'}</button>{msg && <p role="alert" className="text-rose-300 text-sm">{msg}</p>}</form>}
       {loading ? <p className="text-center opacity-70">...</p> : list.length === 0 ? <p className="glass p-8 text-center opacity-80">مفيش أغاني لسه.</p> :
         list.map(s => <div key={s.id} className="glass p-3 flex items-center gap-3">
-          <button className="text-2xl" onClick={() => dispatchEvent(new CustomEvent('ol-play', { detail: s.id }))} aria-label="تشغيل">▶️</button>
-          <div className="flex-1 min-w-0"><p className="font-bold truncate">{s.title}{s.is_default && ' ⭐'}</p><p className="text-xs opacity-70 truncate">{s.artist || s.description}</p></div>
+          <button className="p-1" onClick={() => dispatchEvent(new CustomEvent('ol-play', { detail: s.id }))} aria-label="تشغيل"><Play className="w-6 h-6" fill="currentColor" strokeWidth={1.5} /></button>
+          <div className="flex-1 min-w-0"><p className="font-bold truncate">{s.title}{s.is_default && <Star className="inline-block w-3.5 h-3.5 mr-1.5 text-amber-300" fill="currentColor" aria-label="الأغنية الافتراضية" />}</p><p className="text-xs opacity-70 truncate">{s.artist || s.description}</p></div>
           {me?.can_manage_songs && <div className="flex flex-col text-[11px] gap-1 opacity-80">{!s.is_default && <button onClick={() => makeDefault(s)} className="underline">افتراضية</button>}<button onClick={() => del(s)} className="underline text-rose-300">حذف</button></div>}</div>)}
     </main>)
 }

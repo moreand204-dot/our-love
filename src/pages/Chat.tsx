@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../auth/AuthProvider'
+import { Check, CheckCheck, Circle, Mic, Camera, Image as ImageIcon, X, TriangleAlert, Clock, Pause } from 'lucide-react'
+import Love from '../components/Love'
 
 type Att = { id: string; message_id: string; path: string; mime: string; duration_ms: number | null }
 type Msg = { id: string; client_id: string; sender_id: string; body: string | null; kind: 'text' | 'image' | 'file' | 'voice'; reply_to: string | null
@@ -121,23 +123,23 @@ export default function Chat() {
   function togglePause() { const r = recRef.current; if (!r) return; if (rec === 'rec') { r.pause(); setRec('paused') } else { r.resume(); setRec('rec') } }
 
   async function del(m: Msg) { if (confirm('حذف الرسالة للطرفين؟')) await supabase.from('messages').update({ deleted_at: new Date().toISOString() }).eq('id', m.id) }
-  const tick = (m: Msg) => m.read_at ? <span style={{ color: '#7dd3fc' }}>✓✓</span> : m.delivered_at ? '✓✓' : '✓'
+  const tick = (m: Msg) => m.read_at ? <CheckCheck className="w-4 h-4" style={{ color: '#7dd3fc' }} strokeWidth={2} aria-label="تمت القراءة" /> : m.delivered_at ? <CheckCheck className="w-4 h-4" strokeWidth={2} aria-label="تم التسليم" /> : <Check className="w-4 h-4" strokeWidth={2} aria-label="تم الإرسال" />
   const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 
   return (
     <div className="flex flex-col h-[calc(100dvh-4.5rem)] md:h-screen max-w-2xl mx-auto">
       <header className="glass rounded-t-none p-3 flex items-center justify-between">
         <div><p className="font-bold">{partner?.display_name ?? 'الشات'}</p><p className="text-xs opacity-70">{typing ? 'بيكتب الآن...' : ''}</p></div>
-        <span className={`text-xs ${online ? 'text-emerald-300' : 'text-amber-300'}`}>{online ? '● متصل' : '○ غير متصل — الرسائل هتتبعت لما الاتصال يرجع'}</span>
+        <span className={`text-xs ${online ? 'text-emerald-300' : 'text-amber-300'}`}><Circle className="inline-block w-2.5 h-2.5 ml-1.5 align-[-0.05em]" fill={online ? 'currentColor' : 'none'} strokeWidth={2.5} aria-hidden />{online ? 'متصل' : 'غير متصل — الرسائل هتتبعت لما الاتصال يرجع'}</span>
       </header>
       <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-2">
-        {msgs.length === 0 && pending.length === 0 && <p className="m-auto opacity-70 text-sm">ابدأ أول رسالة ♥</p>}
+        {msgs.length === 0 && pending.length === 0 && <p className="m-auto opacity-70 text-sm">ابدأ أول رسالة <Love /></p>}
         {msgs.map(m => {
           const mine = m.sender_id === me!.id, orig = m.reply_to ? msgs.find(x => x.id === m.reply_to) : null
           return (
             <div key={m.id} className={`max-w-[85%] ${mine ? 'self-start' : 'self-end'}`}>
               <div className="glass px-3 py-2 space-y-1" style={mine ? { background: 'rgba(244,114,182,.22)' } : undefined}>
-                {orig && <p className="text-xs opacity-70 border-r-2 pr-2 truncate" style={{ borderColor: 'var(--primary)' }}>{orig.deleted_at ? 'رسالة محذوفة' : orig.body ?? (orig.kind === 'voice' ? '🎤 صوتية' : '🖼 صورة')}</p>}
+                {orig && <p className="text-xs opacity-70 border-r-2 pr-2 truncate" style={{ borderColor: 'var(--primary)' }}>{orig.deleted_at ? 'رسالة محذوفة' : orig.body ?? (orig.kind === 'voice' ? <><Mic className="inline-block w-3.5 h-3.5 ml-1" aria-hidden />صوتية</> : <><ImageIcon className="inline-block w-3.5 h-3.5 ml-1" aria-hidden />صورة</>)}</p>}
                 {m.deleted_at ? <p className="text-sm opacity-60">تم حذف الرسالة</p> : <>
                   {m.message_attachments?.map(a => <Media key={a.id} att={a} />)}
                   {m.body && <p className="whitespace-pre-wrap break-words">{m.body}</p>}</>}
@@ -152,21 +154,21 @@ export default function Chat() {
         {pending.map(p => (
           <div key={p.client_id} className="max-w-[85%] self-start glass px-3 py-2 opacity-70">
             <p className="whitespace-pre-wrap">{p.body}</p>
-            <p className="text-[10px]">{p.failed ? <button className="text-rose-300" onClick={() => { setPending(l => l.map(x => x.client_id === p.client_id ? { ...x, failed: false } : x)); push(p) }}>⚠️ لم تُرسل — إعادة المحاولة</button> : '⏳ جاري الإرسال'}</p>
+            <p className="text-[10px]">{p.failed ? <button className="text-rose-300" onClick={() => { setPending(l => l.map(x => x.client_id === p.client_id ? { ...x, failed: false } : x)); push(p) }}><TriangleAlert className="inline-block w-3 h-3 ml-1" aria-hidden />لم تُرسل — إعادة المحاولة</button> : <><Clock className="inline-block w-3 h-3 ml-1" aria-hidden />جاري الإرسال</>}</p>
           </div>))}
         <div ref={endRef} />
       </div>
       {err && <p role="alert" className="text-rose-300 text-xs px-4">{err}</p>}
-      {reply && <div className="glass rounded-none px-4 py-1 text-xs flex justify-between"><span className="truncate">رد على: {reply.body ?? 'مرفق'}</span><button onClick={() => setReply(null)}>✕</button></div>}
+      {reply && <div className="glass rounded-none px-4 py-1 text-xs flex justify-between"><span className="truncate">رد على: {reply.body ?? 'مرفق'}</span><button onClick={() => setReply(null)} aria-label="إلغاء الرد"><X className="w-4 h-4" /></button></div>}
       <footer className="glass rounded-b-none p-2 flex items-end gap-2">
         {rec === 'idle' ? <>
-          <label className="cursor-pointer p-2" aria-label="كاميرا">📷<input type="file" accept="image/*" capture="environment" hidden onChange={e => { pickImage(e.target.files?.[0]); e.target.value = '' }} /></label>
-          <label className="cursor-pointer p-2" aria-label="معرض الصور">🖼<input type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={e => { pickImage(e.target.files?.[0]); e.target.value = '' }} /></label>
+          <label className="cursor-pointer p-2" aria-label="كاميرا"><Camera className="w-6 h-6" strokeWidth={1.75} /><input type="file" accept="image/*" capture="environment" hidden onChange={e => { pickImage(e.target.files?.[0]); e.target.value = '' }} /></label>
+          <label className="cursor-pointer p-2" aria-label="معرض الصور"><ImageIcon className="w-6 h-6" strokeWidth={1.75} /><input type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={e => { pickImage(e.target.files?.[0]); e.target.value = '' }} /></label>
           <textarea className="input flex-1 max-h-28" rows={1} placeholder="اكتب رسالة..." value={text} onChange={e => typed(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && window.innerWidth >= 768) { e.preventDefault(); send() } }} />
-          {text.trim() ? <button className="btn" onClick={send}>إرسال</button> : <button className="p-2 text-xl" onClick={startRec} aria-label="تسجيل صوتي">🎤</button>}
+          {text.trim() ? <button className="btn" onClick={send}>إرسال</button> : <button className="p-2 text-xl" onClick={startRec} aria-label="تسجيل صوتي"><Mic className="w-6 h-6" strokeWidth={1.75} /></button>}
         </> : <>
-          <span className="flex-1 text-sm">{rec === 'rec' ? '🔴' : '⏸'} {fmt(secs)}</span>
+          <span className="flex-1 text-sm">{rec === 'rec' ? <Circle className="inline-block w-3 h-3 text-red-500" fill="currentColor" aria-hidden /> : <Pause className="inline-block w-4 h-4" aria-hidden />} {fmt(secs)}</span>
           <button className="p-2" onClick={togglePause}>{rec === 'rec' ? 'إيقاف مؤقت' : 'متابعة'}</button>
           <button className="p-2 text-rose-300" onClick={() => stopRec(false)}>إلغاء</button>
           <button className="btn" onClick={() => stopRec(true)}>إرسال</button></>}

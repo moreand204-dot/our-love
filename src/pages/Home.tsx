@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../auth/AuthProvider'
+import { Mail, CalendarDays, Music, Image as ImageIcon, type LucideIcon } from 'lucide-react'
+import Love from '../components/Love'
 type Settings = { started_on: string|null; home_quote: string; little_world_text: string }
 function since(d: string) {
   const a = new Date(d), n = new Date()
@@ -17,11 +19,11 @@ export default function Home() {
   return (
     <main className="max-w-3xl mx-auto p-5 pb-24 space-y-5">
       <header className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">أهلًا يا {me?.display_name} ♥</h1>
+        <h1 className="text-xl font-bold">أهلًا يا {me?.display_name} <Love /></h1>
         <button onClick={signOut} className="text-sm opacity-70 underline">خروج</button>
       </header>
       <section className="glass p-6 text-center space-y-2">
-        <h2 className="text-lg font-bold" style={{color:'var(--secondary)'}}>عالمنا الصغير ♥</h2>
+        <h2 className="text-lg font-bold" style={{color:'var(--secondary)'}}>عالمنا الصغير <Love /></h2>
         <p className="opacity-90">{s?.little_world_text ?? (err ? 'تعذّر تحميل المحتوى.' : '...')}</p>
         <p className="text-sm opacity-70 pt-2">{s?.home_quote}</p>
       </section>
@@ -39,7 +41,7 @@ export default function Home() {
           </div>))}
       </section>
       <section className="grid grid-cols-2 gap-3">
-        {[['/surprises', '💌 رسالة ليك من القلب'], ['/calendar', '📅 تقويم المناسبات'], ['/songs', '🎵 أغانينا'], ['/album', '🖼 صور هتفضل في القلب']].map(([to, l]) => <Link key={to} to={to} className="glass p-4 text-center text-sm">{l}</Link>)}
+        {([['/surprises', 'رسالة ليك من القلب', Mail], ['/calendar', 'تقويم المناسبات', CalendarDays], ['/songs', 'أغانينا', Music], ['/album', 'صور هتفضل في القلب', ImageIcon]] as [string, string, LucideIcon][]).map(([to, l, Icon]) => <Link key={to} to={to} className="glass p-4 text-center text-sm flex flex-col items-center gap-2"><Icon className="w-6 h-6" strokeWidth={1.75} aria-hidden />{l}</Link>)}
       </section>
     </main>)
 }
